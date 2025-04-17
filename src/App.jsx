@@ -1,6 +1,6 @@
-import "./App.css";
-import CartSummary from "./CartSummary";
-import SignupForm from "./SignupForm";
+import "./Styles/App.css";
+import CartSummary from "./Components/CartSummary";
+import SignupForm from "./Components/SignupForm";
 
 function App() {
   return (

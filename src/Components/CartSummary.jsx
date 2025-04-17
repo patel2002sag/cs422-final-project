@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import "./cartStyles.css";
-
+import "../Styles/cartStyles.css";
 const CartSummary = () => {
   const [cartItems, setCartItems] = useState([
     {
@@ -40,7 +39,7 @@ const CartSummary = () => {
   };
 
   const handleQuantityChange = (id, newQuantity) => {
-    if (newQuantity < 1) return; 
+    if (newQuantity < 1) return;
 
     setCartItems(
       cartItems.map((item) => {
