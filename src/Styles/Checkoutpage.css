@@ -1,0 +1,103 @@
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  
+  .checkout-page {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  .checkout-header {
+    font-size: 24px;
+    color: #333333;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 8px;
+  }
+  
+  .checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .checkout-row {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .checkout-input {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .checkout-input:focus {
+    outline: none;
+    border-color: #333333;
+    box-shadow: 0 0 8px rgba(51, 51, 51, 0.2);
+  }
+  
+  .checkout-button {
+    padding: 14px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #333333;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    align-self: flex-start;
+  }
+  .checkout-button:hover {
+    background-color: #555555;
+    transform: translateY(-2px);
+  }
+  .checkout-button:active {
+    transform: translateY(0);
+  }
+  
+  /* Section titles spacing */
+  .checkout-header + h2 {
+    margin-top: 30px;
+  }
+  
+  /* Fulfillment button styles */
+  .fulfillment-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .fulfillment-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    color: #555555;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
+  
+  .fulfillment-button:hover {
+    background-color: #eaeaea;
+  }
+  
+  .fulfillment-button.active {
+    background-color: #333333;
+    color: #ffffff;
+    border-color: #333333;
+  }
+  

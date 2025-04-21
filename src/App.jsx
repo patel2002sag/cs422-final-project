@@ -1,14 +1,14 @@
 import "./Styles/App.css";
-import "./Styles/accountStyles.css"; // Import the new account styles
+import "./Styles/accountStyles.css";
 import { useState } from "react";
 import CartSummary from "./Components/CartSummary";
 import SignupForm from "./Components/SignupForm";
-import AccountInformation from "./Components/AccountInformation"; // Import the new component
+import AccountInformation from "./Components/AccountInformation";
+import CheckoutPage from "./Components/CheckoutPage";
 
 function App() {
-  const [currentView, setCurrentView] = useState("account"); // Default view set to account
+  const [currentView, setCurrentView] = useState("account");
 
-  // Function to switch between different views
   const renderView = () => {
     switch (currentView) {
       case "signup":
@@ -17,6 +17,8 @@ function App() {
         return <CartSummary />;
       case "account":
         return <AccountInformation />;
+      case "checkout":
+        return <CheckoutPage />;
       default:
         return <AccountInformation />;
     }
@@ -28,6 +30,7 @@ function App() {
         <button onClick={() => setCurrentView("signup")}>Signup</button>
         <button onClick={() => setCurrentView("cart")}>Cart</button>
         <button onClick={() => setCurrentView("account")}>Account</button>
+        <button onClick={() => setCurrentView("checkout")}>Checkout</button>
       </nav>
       {renderView()}
     </>
