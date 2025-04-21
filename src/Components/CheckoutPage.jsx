@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"; 
 import "../Styles/Checkoutpage.css";
-
+//1
 export default function CheckoutPage() {
   const [fulfillment, setFulfillment] = useState("ship");
   const [info, setInfo] = useState({
