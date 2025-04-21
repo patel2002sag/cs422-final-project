@@ -8,6 +8,7 @@ const CartSummary = () => {
       price: 25.99,
       quantity: 2,
       totalPrice: 51.98,
+      status: "active",
     },
     {
       id: 2,
@@ -15,6 +16,7 @@ const CartSummary = () => {
       price: 14.5,
       quantity: 1,
       totalPrice: 14.5,
+      status: "active",
     },
     {
       id: 3,
@@ -22,20 +24,36 @@ const CartSummary = () => {
       price: 32.75,
       quantity: 3,
       totalPrice: 98.25,
+      status: "active",
     },
   ]);
 
-  const cartTotal = cartItems.reduce(
-    (total, item) => total + item.totalPrice,
-    0
-  );
+  const cartTotal = cartItems
+    .filter((item) => item.status === "active")
+    .reduce((total, item) => total + item.totalPrice, 0);
 
   const handleRemoveItem = (id) => {
-    setCartItems(cartItems.filter((item) => item.id !== id));
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, status: "removed" } : item
+      )
+    );
+  };
+  
+  const handleSaveForLater = (id) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, status: "saved" } : item
+      )
+    );
   };
 
-  const handleSaveForLater = (id) => {
-    console.log(`Item ${id} saved for later`);
+  const handleNone = (id) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.id === id ? { ...item, status: "active" } : item
+      )
+    );
   };
 
   const handleQuantityChange = (id, newQuantity) => {
@@ -62,6 +80,13 @@ const CartSummary = () => {
     } else if (action === "remove") {
       handleRemoveItem(id);
     }
+    else if (action === "none") {
+      handleNone(id);
+    }
+  };
+
+  const handleCheckout = () => {
+    window.location.href = "temp"; // change to checkout page
   };
 
   return (
@@ -132,6 +157,7 @@ const CartSummary = () => {
                     <option value="" disabled>Select action</option>
                     <option value="save">Save for Later</option>
                     <option value="remove">Remove</option>
+                    <option value="none">None</option>
                   </select>
                 </div>
               </div>
@@ -144,7 +170,7 @@ const CartSummary = () => {
                   ${cartTotal.toFixed(2)}
                 </span>
               </div>
-              <button className="checkout-btn">Checkout</button>
+              <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
             </div>
           </>
         )}
