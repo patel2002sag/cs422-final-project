@@ -90,6 +90,12 @@ body {
   justify-content: center;
 }
 
+.action-dropdown {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
 .quantity-btn {
   width: 30px;
   height: 30px;

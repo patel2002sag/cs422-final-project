@@ -56,6 +56,14 @@ const CartSummary = () => {
     );
   };
 
+  const handleActionSelect = (id, action) => {
+    if (action === "save") {
+      handleSaveForLater(id);
+    } else if (action === "remove") {
+      handleRemoveItem(id);
+    }
+  };
+
   return (
     <div className="cart-container">
       <h1 className="cart-title">Your Shopping Cart</h1>
@@ -117,18 +125,14 @@ const CartSummary = () => {
                   ${item.totalPrice.toFixed(2)}
                 </div>
                 <div className="cart-item-actions">
-                  <button
-                    className="save-later-btn"
-                    onClick={() => handleSaveForLater(item.id)}
-                  >
-                    Save for Later
-                  </button>
-                  <button
-                    className="remove-btn"
-                    onClick={() => handleRemoveItem(item.id)}
-                  >
-                    Remove
-                  </button>
+                <select
+                    className="action-dropdown"
+                    defaultValue=""
+                    onChange={(e) => handleActionSelect(item.id, e.target.value)}>
+                    <option value="" disabled>Select action</option>
+                    <option value="save">Save for Later</option>
+                    <option value="remove">Remove</option>
+                  </select>
                 </div>
               </div>
             ))}
