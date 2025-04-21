@@ -14,7 +14,8 @@ function App() {
       case "signup":
         return <SignupForm />;
       case "cart":
-        return <CartSummary />;
+        //return <CartSummary />;
+        return <CartSummary setCurrentView={setCurrentView}/>;
       case "account":
         return <AccountInformation />;
       case "checkout":

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../Styles/cartStyles.css";
-const CartSummary = () => {
+
+const CartSummary = ({ setCurrentView }) => {
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -86,7 +87,7 @@ const CartSummary = () => {
   };
 
   const handleCheckout = () => {
-    window.location.href = "temp"; // change to checkout page
+    setCurrentView("checkout");
   };
 
   return (
