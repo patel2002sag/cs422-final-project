@@ -24,6 +24,7 @@ const dummyProducts = [
     image: "/src/assets/images/living-room/sectional-sofa.jpg",
     price: 1299.99,
     category: "Living Room",
+    tags: ["modern", "space-saving", "multi-functional"],
   },
   {
     id: 2,
@@ -31,6 +32,7 @@ const dummyProducts = [
     image: "/src/assets/images/living-room/leather-recliner.jpg",
     price: 799.99,
     category: "Living Room",
+    tags: ["study", "budget"],
   },
   {
     id: 3,
@@ -38,6 +40,7 @@ const dummyProducts = [
     image: "/src/assets/images/living-room/coffee-table.jpg",
     price: 449.99,
     category: "Living Room",
+    tags: ["dorm", "budget", "space-saving"],
   },
   // Dining Room
   {
@@ -46,6 +49,7 @@ const dummyProducts = [
     image: "/src/assets/images/dining-room/dining-set.jpg",
     price: 1599.99,
     category: "Dining Room",
+    tags: ["apartment", "multi-functional"],
   },
   {
     id: 5,
@@ -53,6 +57,7 @@ const dummyProducts = [
     image: "/src/assets/images/dining-room/china-cabinet.jpg",
     price: 899.99,
     category: "Dining Room",
+    tags: ["apartment", "study"],
   },
   {
     id: 6,
@@ -60,6 +65,7 @@ const dummyProducts = [
     image: "/src/assets/images/dining-room/bar-stools.jpg",
     price: 299.99,
     category: "Dining Room",
+    tags: ["dorm", "budget", "space-saving"],
   },
   // Bedroom
   {
@@ -68,6 +74,7 @@ const dummyProducts = [
     image: "/src/assets/images/bedroom/platform-bed.jpg",
     price: 899.99,
     category: "Bedroom",
+    tags: ["dorm", "space-saving"],
   },
   {
     id: 8,
@@ -75,6 +82,7 @@ const dummyProducts = [
     image: "/src/assets/images/bedroom/dresser.jpg",
     price: 699.99,
     category: "Bedroom",
+    tags: ["apartment", "multi-functional"],
   },
   {
     id: 9,
@@ -82,6 +90,7 @@ const dummyProducts = [
     image: "/src/assets/images/bedroom/nightstand.jpg",
     price: 349.99,
     category: "Bedroom",
+    tags: ["dorm", "budget", "space-saving"],
   },
   // Office
   {
@@ -90,6 +99,7 @@ const dummyProducts = [
     image: "/src/assets/images/office/executive-desk.jpg",
     price: 799.99,
     category: "Office",
+    tags: ["study", "apartment"],
   },
   {
     id: 11,
@@ -97,6 +107,7 @@ const dummyProducts = [
     image: "/src/assets/images/office/ergonomic-chair.jpg",
     price: 399.99,
     category: "Office",
+    tags: ["study", "budget"],
   },
   {
     id: 12,
@@ -104,6 +115,7 @@ const dummyProducts = [
     image: "/src/assets/images/office/bookshelf.jpg",
     price: 299.99,
     category: "Office",
+    tags: ["dorm", "budget", "space-saving"],
   },
   // Additional Living Room Items
   {
@@ -112,6 +124,7 @@ const dummyProducts = [
     image: "/src/assets/images/living-room/tv-stand.jpg",
     price: 449.99,
     category: "Living Room",
+    tags: ["dorm", "budget", "space-saving"],
   },
   {
     id: 14,
@@ -119,6 +132,7 @@ const dummyProducts = [
     image: "/src/assets/images/living-room/side-table.jpg",
     price: 249.99,
     category: "Living Room",
+    tags: ["dorm", "budget"],
   },
   // Additional Dining Room Items
   {
@@ -127,6 +141,7 @@ const dummyProducts = [
     image: "/src/assets/images/dining-room/buffet.jpg",
     price: 799.99,
     category: "Dining Room",
+    tags: ["apartment", "multi-functional"],
   },
   {
     id: 16,
@@ -134,6 +149,7 @@ const dummyProducts = [
     image: "/src/assets/images/dining-room/wine-rack.jpg",
     price: 199.99,
     category: "Dining Room",
+    tags: ["dorm", "budget", "space-saving"],
   },
   // Additional Bedroom Items
   {
@@ -142,6 +158,7 @@ const dummyProducts = [
     image: "/src/assets/images/bedroom/wardrobe.jpg",
     price: 899.99,
     category: "Bedroom",
+    tags: ["apartment", "multi-functional"],
   },
   {
     id: 18,
@@ -149,6 +166,7 @@ const dummyProducts = [
     image: "/src/assets/images/bedroom/vanity.jpg",
     price: 499.99,
     category: "Bedroom",
+    tags: ["dorm", "budget"],
   },
   // Additional Office Items
   {
@@ -157,6 +175,7 @@ const dummyProducts = [
     image: "/src/assets/images/office/filing-cabinet.jpg",
     price: 249.99,
     category: "Office",
+    tags: ["study", "budget", "space-saving"],
   },
   {
     id: 20,
@@ -164,6 +183,7 @@ const dummyProducts = [
     image: "/src/assets/images/office/desk-lamp.jpg",
     price: 79.99,
     category: "Office",
+    tags: ["study", "budget", "dorm"],
   },
 ];
 
@@ -180,6 +200,7 @@ const BrowseItems = () => {
     { label: "Study Focus", value: "study" },
     { label: "Budget Friendly", value: "budget" },
     { label: "Multi-functional", value: "multi-functional" },
+    { label: "Apartment", value: "apartment" },
   ];
 
   // Get recommended products based on student profile
@@ -248,7 +269,7 @@ const BrowseItems = () => {
       product.price >= priceRange[0] && product.price <= priceRange[1];
     const matchesFilters =
       selectedFilters.length === 0 ||
-      selectedFilters.some((filter) => product.tags?.includes(filter));
+      selectedFilters.every((filter) => product.tags.includes(filter));
     return matchesCategory && matchesPrice && matchesFilters;
   });
 
