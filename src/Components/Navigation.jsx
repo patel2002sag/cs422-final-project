@@ -1,5 +1,13 @@
 import React from "react";
-import { AppBar, Toolbar, IconButton, Badge, Box, Button } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Badge,
+  Box,
+  Button,
+  Typography,
+} from "@mui/material";
 import {
   ShoppingCart as ShoppingCartIcon,
   Person as PersonIcon,
@@ -33,7 +41,7 @@ const Navigation = () => {
           onClick={() => navigate("/")}
           sx={{ fontSize: "1.2rem" }}
         >
-          Furniture Store
+          Rastro
         </Button>
 
         <Box sx={{ display: "flex", gap: 1 }}>

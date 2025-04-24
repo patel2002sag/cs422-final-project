@@ -11,16 +11,45 @@ import {
   StepLabel,
   Box,
   Divider,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormControl,
+  FormLabel,
 } from "@mui/material";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
-const steps = ["Shipping Address", "Payment Details", "Review Order"];
+const steps = ["Delivery Method", "Payment Details", "Review Order"];
+
+// Store locations data
+const storeLocations = [
+  {
+    id: 1,
+    name: "Downtown Store",
+    address: "123 Main St, Downtown, CA 90001",
+    hours: "Mon-Sat: 10AM-8PM, Sun: 11AM-6PM",
+  },
+  {
+    id: 2,
+    name: "Westside Location",
+    address: "456 Ocean Ave, Westside, CA 90002",
+    hours: "Mon-Sat: 9AM-9PM, Sun: 10AM-7PM",
+  },
+  {
+    id: 3,
+    name: "Eastside Store",
+    address: "789 Valley Rd, Eastside, CA 90003",
+    hours: "Mon-Sat: 10AM-7PM, Sun: 12PM-6PM",
+  },
+];
 
 const CheckoutPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const { cartItems, cartTotal } = useCart();
   const navigate = useNavigate();
+  const [deliveryMethod, setDeliveryMethod] = useState("shipping");
+  const [selectedStore, setSelectedStore] = useState("");
 
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
@@ -35,28 +64,123 @@ const CheckoutPage = () => {
     handleNext();
   };
 
-  const ShippingForm = () => (
+  const DeliveryMethodForm = () => (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={6}>
-          <TextField required fullWidth label="First Name" variant="outlined" />
+      <FormControl component="fieldset" sx={{ width: "100%", mb: 3 }}>
+        <FormLabel component="legend">Choose Delivery Method</FormLabel>
+        <RadioGroup
+          value={deliveryMethod}
+          onChange={(e) => setDeliveryMethod(e.target.value)}
+        >
+          <FormControlLabel
+            value="shipping"
+            control={<Radio />}
+            label="Ship to Address"
+          />
+          <FormControlLabel
+            value="pickup"
+            control={<Radio />}
+            label="Store Pickup"
+          />
+        </RadioGroup>
+      </FormControl>
+
+      {deliveryMethod === "shipping" ? (
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              fullWidth
+              label="First Name"
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              required
+              fullWidth
+              label="Last Name"
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField required fullWidth label="Address" variant="outlined" />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField required fullWidth label="City" variant="outlined" />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField required fullWidth label="State" variant="outlined" />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField required fullWidth label="ZIP Code" variant="outlined" />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              label="Phone Number"
+              variant="outlined"
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField required fullWidth label="Last Name" variant="outlined" />
+      ) : (
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <FormControl component="fieldset" sx={{ width: "100%" }}>
+              <FormLabel component="legend">Select Store Location</FormLabel>
+              <RadioGroup
+                value={selectedStore}
+                onChange={(e) => setSelectedStore(e.target.value)}
+              >
+                {storeLocations.map((store) => (
+                  <Paper
+                    key={store.id}
+                    elevation={selectedStore === store.id.toString() ? 3 : 1}
+                    sx={{
+                      p: 2,
+                      mb: 2,
+                      cursor: "pointer",
+                      border:
+                        selectedStore === store.id.toString()
+                          ? "2px solid #1976d2"
+                          : "none",
+                    }}
+                    onClick={() => setSelectedStore(store.id.toString())}
+                  >
+                    <FormControlLabel
+                      value={store.id.toString()}
+                      control={<Radio />}
+                      label={
+                        <Box>
+                          <Typography variant="subtitle1">
+                            {store.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {store.address}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {store.hours}
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </Paper>
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              fullWidth
+              label="Phone Number for Pickup"
+              variant="outlined"
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <TextField required fullWidth label="Address" variant="outlined" />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField required fullWidth label="City" variant="outlined" />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField required fullWidth label="State" variant="outlined" />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField required fullWidth label="ZIP Code" variant="outlined" />
-        </Grid>
-      </Grid>
+      )}
+
       <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
         <Button type="submit" variant="contained" color="primary">
           Next
@@ -129,6 +253,32 @@ const CheckoutPage = () => {
         </Box>
       ))}
       <Divider sx={{ my: 2 }} />
+
+      <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+        Delivery Details
+      </Typography>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="body1">
+          Method:{" "}
+          {deliveryMethod === "shipping" ? "Ship to Address" : "Store Pickup"}
+        </Typography>
+        {deliveryMethod === "pickup" && selectedStore && (
+          <Typography variant="body2" color="text.secondary">
+            {
+              storeLocations.find(
+                (store) => store.id.toString() === selectedStore
+              )?.name
+            }
+            <br />
+            {
+              storeLocations.find(
+                (store) => store.id.toString() === selectedStore
+              )?.address
+            }
+          </Typography>
+        )}
+      </Box>
+
       <Grid container>
         <Grid item xs={10}>
           <Typography variant="h6">Total</Typography>
@@ -156,7 +306,7 @@ const CheckoutPage = () => {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <ShippingForm />;
+        return <DeliveryMethodForm />;
       case 1:
         return <PaymentForm />;
       case 2:

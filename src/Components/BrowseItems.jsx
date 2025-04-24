@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import ProductCard from "./ProductCard";
+import AIChatbot from "./AIChatbot";
 
 const dummyProducts = [
   // Living Room
@@ -205,6 +206,8 @@ const BrowseItems = () => {
           </Grid>
         ))}
       </Grid>
+
+      <AIChatbot />
     </Container>
   );
 };
