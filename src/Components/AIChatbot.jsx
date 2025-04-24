@@ -60,22 +60,41 @@ const AIChatbot = () => {
   const generateBotResponse = (userInput) => {
     const lowerInput = userInput.toLowerCase();
 
-    // Simple response logic (replace with actual AI integration)
-    if (lowerInput.includes("help") || lowerInput.includes("assist")) {
-      return "I can help you find furniture, compare prices, check availability, and provide product recommendations. What are you looking for?";
-    } else if (lowerInput.includes("sofa") || lowerInput.includes("couch")) {
-      return "We have a great selection of sofas! You can find them in the Living Room category. Would you like me to show you our bestselling models?";
-    } else if (lowerInput.includes("price") || lowerInput.includes("cost")) {
-      return "Our prices are competitive and vary by product. You can see the price for each item on its product page. Would you like me to show you our current deals?";
+    // Student-specific response logic
+    if (
+      lowerInput.includes("budget") ||
+      lowerInput.includes("price") ||
+      lowerInput.includes("cost")
+    ) {
+      return "I can help you find furniture that fits your student budget! We offer special student discounts and flexible payment options. What's your budget range?";
+    } else if (
+      lowerInput.includes("dorm") ||
+      lowerInput.includes("apartment")
+    ) {
+      return "We have furniture specifically designed for dorm rooms and small apartments! Would you like to see our space-saving solutions or multi-functional furniture?";
+    } else if (
+      lowerInput.includes("study") ||
+      lowerInput.includes("desk") ||
+      lowerInput.includes("workspace")
+    ) {
+      return "For your study space, I recommend our ergonomic desks and chairs. We have options that work well for both coding and writing. Would you like to see our study furniture collection?";
+    } else if (lowerInput.includes("major") || lowerInput.includes("course")) {
+      return "I can recommend furniture based on your major! For example, architecture students might need larger desks for drafting, while computer science students might prefer ergonomic setups. What's your major?";
+    } else if (lowerInput.includes("year") || lowerInput.includes("grade")) {
+      return "Your academic year helps me suggest appropriate furniture! Freshmen might need more basic dorm essentials, while upperclassmen might want more sophisticated apartment furniture. What year are you in?";
+    } else if (lowerInput.includes("help") || lowerInput.includes("assist")) {
+      return "I can help you find furniture that matches your student lifestyle! I can recommend items based on your major, year, budget, and living space. What would you like to know?";
+    } else if (lowerInput.includes("discount") || lowerInput.includes("deal")) {
+      return "We offer student discounts with valid ID! Plus, we have special deals for back-to-school season. Would you like to see our current student promotions?";
     } else if (
       lowerInput.includes("delivery") ||
       lowerInput.includes("shipping")
     ) {
-      return "We offer both delivery and store pickup options. Standard delivery takes 3-5 business days. Would you like to know more about our delivery options?";
+      return "We offer free delivery to most college campuses! For dorms, we can coordinate with your housing office. Would you like to know more about our student delivery options?";
     } else if (lowerInput.includes("return") || lowerInput.includes("refund")) {
-      return "We have a 30-day return policy for most items. The item must be in its original condition. Would you like to know more about our return process?";
+      return "We have a student-friendly return policy! You can return items within 30 days, and we offer free pickup from campus locations. Need more details about returns?";
     } else {
-      return "I'm here to help! You can ask me about our products, prices, delivery options, or return policy. What would you like to know?";
+      return "I'm here to help you find the perfect furniture for your student life! You can ask me about budget-friendly options, space-saving solutions, or recommendations based on your major and year. What would you like to know?";
     }
   };
 

@@ -6,9 +6,15 @@ import {
   Select,
   MenuItem,
   Typography,
+  FormControl,
+  InputLabel,
+  Slider,
+  Chip,
+  Paper,
 } from "@mui/material";
 import ProductCard from "./ProductCard";
 import AIChatbot from "./AIChatbot";
+import { useUser } from "../context/UserContext";
 
 const dummyProducts = [
   // Living Room
@@ -161,51 +167,190 @@ const dummyProducts = [
   },
 ];
 
-const categories = ["All", "Living Room", "Dining Room", "Bedroom", "Office"];
-
 const BrowseItems = () => {
+  const { userProfile } = useUser();
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [priceRange, setPriceRange] = useState([0, 2000]);
+  const [selectedFilters, setSelectedFilters] = useState([]);
 
-  const filteredProducts =
-    selectedCategory === "All"
-      ? dummyProducts
-      : dummyProducts.filter(
-          (product) => product.category === selectedCategory
-        );
+  // Student-specific filters
+  const studentFilters = [
+    { label: "Dorm Essentials", value: "dorm" },
+    { label: "Space Saving", value: "space-saving" },
+    { label: "Study Focus", value: "study" },
+    { label: "Budget Friendly", value: "budget" },
+    { label: "Multi-functional", value: "multi-functional" },
+  ];
+
+  // Get recommended products based on student profile
+  const getRecommendedProducts = () => {
+    let recommendations = [...dummyProducts];
+
+    // Filter by major-specific needs
+    if (userProfile?.major) {
+      switch (userProfile.major.toLowerCase()) {
+        case "computer science":
+        case "software engineering":
+          recommendations = recommendations.filter(
+            (product) =>
+              product.name.toLowerCase().includes("desk") ||
+              product.name.toLowerCase().includes("chair")
+          );
+          break;
+        case "architecture":
+        case "design":
+          recommendations = recommendations.filter(
+            (product) =>
+              product.name.toLowerCase().includes("desk") ||
+              product.name.toLowerCase().includes("table")
+          );
+          break;
+        // Add more major-specific filters
+      }
+    }
+
+    // Filter by academic year
+    if (userProfile?.academicYear) {
+      switch (userProfile.academicYear.toLowerCase()) {
+        case "freshman":
+          recommendations = recommendations.filter(
+            (product) =>
+              product.name.toLowerCase().includes("dorm") || product.price < 500
+          );
+          break;
+        case "senior":
+        case "graduate":
+          recommendations = recommendations.filter(
+            (product) =>
+              product.name.toLowerCase().includes("apartment") ||
+              product.price > 500
+          );
+          break;
+        // Add more year-specific filters
+      }
+    }
+
+    return recommendations;
+  };
+
+  const handleFilterToggle = (filter) => {
+    setSelectedFilters((prev) =>
+      prev.includes(filter)
+        ? prev.filter((f) => f !== filter)
+        : [...prev, filter]
+    );
+  };
+
+  const filteredProducts = dummyProducts.filter((product) => {
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory;
+    const matchesPrice =
+      product.price >= priceRange[0] && product.price <= priceRange[1];
+    const matchesFilters =
+      selectedFilters.length === 0 ||
+      selectedFilters.some((filter) => product.tags?.includes(filter));
+    return matchesCategory && matchesPrice && matchesFilters;
+  });
+
+  const recommendedProducts = getRecommendedProducts();
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 4,
-        }}
-      >
-        <Typography variant="h4" component="h1">
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
           Browse Items
         </Typography>
-        <Select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          sx={{ minWidth: 200 }}
-        >
-          {categories.map((category) => (
-            <MenuItem key={category} value={category}>
-              {category}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
 
-      <Grid container spacing={4}>
-        {filteredProducts.map((product) => (
-          <Grid item key={product.id} xs={12} sm={6} md={4} lg={3}>
-            <ProductCard product={product} />
+        {/* Student Profile Summary */}
+        {userProfile && (
+          <Paper sx={{ p: 2, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Personalized Recommendations
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Based on your profile: {userProfile.major} student,{" "}
+              {userProfile.academicYear}
+            </Typography>
+          </Paper>
+        )}
+
+        {/* Filters */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={4}>
+            <FormControl fullWidth>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                label="Category"
+              >
+                <MenuItem value="All">All Categories</MenuItem>
+                <MenuItem value="Living Room">Living Room</MenuItem>
+                <MenuItem value="Dining Room">Dining Room</MenuItem>
+                <MenuItem value="Bedroom">Bedroom</MenuItem>
+                <MenuItem value="Office">Office</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
-        ))}
-      </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Typography gutterBottom>Price Range</Typography>
+            <Slider
+              value={priceRange}
+              onChange={(e, newValue) => setPriceRange(newValue)}
+              valueLabelDisplay="auto"
+              min={0}
+              max={2000}
+              step={100}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+              {studentFilters.map((filter) => (
+                <Chip
+                  key={filter.value}
+                  label={filter.label}
+                  onClick={() => handleFilterToggle(filter.value)}
+                  color={
+                    selectedFilters.includes(filter.value)
+                      ? "primary"
+                      : "default"
+                  }
+                />
+              ))}
+            </Box>
+          </Grid>
+        </Grid>
+
+        {/* Recommended Products */}
+        {userProfile && (
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Recommended for You
+            </Typography>
+            <Grid container spacing={3}>
+              {recommendedProducts.slice(0, 4).map((product) => (
+                <Grid item key={product.id} xs={12} sm={6} md={3}>
+                  <ProductCard product={product} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )}
+
+        {/* All Products */}
+        <Typography variant="h6" gutterBottom>
+          All Products
+        </Typography>
+        <Grid container spacing={3}>
+          {filteredProducts.map((product) => (
+            <Grid item key={product.id} xs={12} sm={6} md={3}>
+              <ProductCard product={product} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
       <AIChatbot />
     </Container>
