@@ -1,268 +1,123 @@
-import React, { useState, useEffect } from "react";
-import "../Styles/styles.css";
+import React from "react";
+import {
+  Container,
+  Paper,
+  Typography,
+  Grid,
+  TextField,
+  Button,
+  Box,
+  Divider,
+} from "@mui/material";
 
 const AccountInformation = () => {
-  // Default user data
-  const defaultUserData = {
-    username: "johnsmith",
-    email: "john.smith@example.com",
+  // This would typically come from a user context or state management
+  const userProfile = {
     firstName: "John",
-    lastName: "Smith",
-    address: "123 University Ave",
-    city: "Chicago",
-    state: "IL",
-    zipCode: "60607",
-    phone: "(312) 555-1234",
+    lastName: "Doe",
+    email: "john.doe@example.com",
+    phone: "(555) 123-4567",
+    address: "123 Main St",
+    city: "Anytown",
+    state: "CA",
+    zipCode: "12345",
   };
 
-  // Load user data from localStorage or use default
-  const [userData, setUserData] = useState(() => {
-    const savedUserData = localStorage.getItem("userData");
-    return savedUserData ? JSON.parse(savedUserData) : defaultUserData;
-  });
-
-  // Copy of user data for editing
-  const [editData, setEditData] = useState({ ...userData });
-  
-  // Save to localStorage whenever userData changes
-  useEffect(() => {
-    localStorage.setItem("userData", JSON.stringify(userData));
-  }, [userData]);
-
-  // Edit mode state
-  const [isEditing, setIsEditing] = useState(false);
-  
-  // Success message state
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setEditData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setUserData({ ...editData });
-    setIsEditing(false);
-    setShowSuccess(true);
-    
-    // Hide success message after 3 seconds
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 3000);
-  };
-
-  // Cancel editing
-  const handleCancel = () => {
-    setEditData({ ...userData });
-    setIsEditing(false);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Handle profile update logic here
   };
 
   return (
-    <div className="container">
-      <div className="app-header">
-        <div className="app-title">Account Information</div>
-      </div>
-      
-      {showSuccess && (
-        <div className="success-message">
-          Your account information has been successfully updated!
-        </div>
-      )}
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Account Information
+        </Typography>
+        <Divider sx={{ mb: 4 }} />
 
-      <div className="account-container">
-        {!isEditing ? (
-          <div className="account-info">
-            <div className="account-section">
-              <h2 className="section-title">Personal Information</h2>
-              <div className="info-row">
-                <span className="info-label">Username:</span>
-                <span className="info-value">{userData.username}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Email:</span>
-                <span className="info-value">{userData.email}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">First Name:</span>
-                <span className="info-value">{userData.firstName}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Last Name:</span>
-                <span className="info-value">{userData.lastName}</span>
-              </div>
-            </div>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="First Name"
+                defaultValue={userProfile.firstName}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Last Name"
+                defaultValue={userProfile.lastName}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Email"
+                defaultValue={userProfile.email}
+                variant="outlined"
+                type="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Phone"
+                defaultValue={userProfile.phone}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Address"
+                defaultValue={userProfile.address}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="City"
+                defaultValue={userProfile.city}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                fullWidth
+                label="State"
+                defaultValue={userProfile.state}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                fullWidth
+                label="ZIP Code"
+                defaultValue={userProfile.zipCode}
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
 
-            <div className="account-section">
-              <h2 className="section-title">Contact Information</h2>
-              <div className="info-row">
-                <span className="info-label">Address:</span>
-                <span className="info-value">{userData.address}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">City:</span>
-                <span className="info-value">{userData.city}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">State:</span>
-                <span className="info-value">{userData.state}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Zip Code:</span>
-                <span className="info-value">{userData.zipCode}</span>
-              </div>
-              <div className="info-row">
-                <span className="info-label">Phone:</span>
-                <span className="info-value">{userData.phone}</span>
-              </div>
-            </div>
-
-            <button
-              className="btn edit-btn"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit Information
-            </button>
-          </div>
-        ) : (
-          <form className="edit-form" onSubmit={handleSubmit}>
-            <div className="account-section">
-              <h2 className="section-title">Personal Information</h2>
-              
-              <div className="form-group">
-                <label htmlFor="username">Username</label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  className="form-control"
-                  value={editData.username}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="form-control"
-                  value={editData.email}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="firstName">First Name</label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  className="form-control"
-                  value={editData.firstName}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="lastName">Last Name</label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  className="form-control"
-                  value={editData.lastName}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="account-section">
-              <h2 className="section-title">Contact Information</h2>
-              
-              <div className="form-group">
-                <label htmlFor="address">Address</label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  className="form-control"
-                  value={editData.address}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="city">City</label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  className="form-control"
-                  value={editData.city}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="state">State</label>
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  className="form-control"
-                  value={editData.state}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="zipCode">Zip Code</label>
-                <input
-                  type="text"
-                  id="zipCode"
-                  name="zipCode"
-                  className="form-control"
-                  value={editData.zipCode}
-                  onChange={handleChange}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="phone">Phone</label>
-                <input
-                  type="text"
-                  id="phone"
-                  name="phone"
-                  className="form-control"
-                  value={editData.phone}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="button-group">
-              <button type="submit" className="btn save-btn">
-                Save Changes
-              </button>
-              <button
-                type="button"
-                className="btn cancel-btn"
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        )}
-      </div>
-    </div>
+          <Box
+            sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}
+          >
+            <Button variant="outlined" color="secondary">
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained" color="primary">
+              Save Changes
+            </Button>
+          </Box>
+        </form>
+      </Paper>
+    </Container>
   );
 };
 

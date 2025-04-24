@@ -1,182 +1,263 @@
 import React, { useState } from "react";
-import "../Styles/cartStyles.css";
+import {
+  Container,
+  Typography,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Box,
+  Select,
+  MenuItem,
+  IconButton,
+  TextField,
+} from "@mui/material";
+import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
-const CartSummary = ({ setCurrentView }) => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Product Item 1",
-      price: 25.99,
-      quantity: 2,
-      totalPrice: 51.98,
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Product Item 2",
-      price: 14.5,
-      quantity: 1,
-      totalPrice: 14.5,
-      status: "active",
-    },
-    {
-      id: 3,
-      name: "Product Item 3",
-      price: 32.75,
-      quantity: 3,
-      totalPrice: 98.25,
-      status: "active",
-    },
-  ]);
+const CartSummary = () => {
+  const { cartItems, removeFromCart, updateQuantity, cartTotal, addToCart } =
+    useCart();
+  const navigate = useNavigate();
+  const [savedItems, setSavedItems] = useState([]);
 
-  const cartTotal = cartItems
-    .filter((item) => item.status === "active")
-    .reduce((total, item) => total + item.totalPrice, 0);
-
-  const handleRemoveItem = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, status: "removed" } : item
-      )
-    );
-  };
-  
-  const handleSaveForLater = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, status: "saved" } : item
-      )
-    );
-  };
-
-  const handleNone = (id) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.id === id ? { ...item, status: "active" } : item
-      )
-    );
-  };
-
-  const handleQuantityChange = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    setCartItems(
-      cartItems.map((item) => {
-        if (item.id === id) {
-          const updatedQuantity = parseInt(newQuantity);
-          return {
-            ...item,
-            quantity: updatedQuantity,
-            totalPrice: parseFloat((item.price * updatedQuantity).toFixed(2)),
-          };
-        }
-        return item;
-      })
-    );
-  };
-
-  const handleActionSelect = (id, action) => {
-    if (action === "save") {
-      handleSaveForLater(id);
-    } else if (action === "remove") {
-      handleRemoveItem(id);
+  const handleQuantityChange = (productId, currentQuantity, increment) => {
+    const newQuantity = currentQuantity + increment;
+    if (newQuantity >= 0) {
+      updateQuantity(productId, newQuantity);
     }
-    else if (action === "none") {
-      handleNone(id);
+  };
+
+  const handleActionChange = (event, item) => {
+    const action = event.target.value;
+    switch (action) {
+      case "save-later":
+        setSavedItems([...savedItems, item]);
+        removeFromCart(item.id);
+        break;
+      case "delete":
+        removeFromCart(item.id);
+        break;
+      default:
+        break;
     }
+  };
+
+  const handleMoveToCart = (savedItem) => {
+    // Remove from saved items
+    setSavedItems(savedItems.filter((item) => item.id !== savedItem.id));
+    // Add back to cart with quantity 1
+    addToCart({ ...savedItem, quantity: 1 });
   };
 
   const handleCheckout = () => {
-    setCurrentView("checkout");
+    navigate("/checkout");
   };
 
+  if (cartItems.length === 0 && savedItems.length === 0) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4, textAlign: "center" }}>
+        <Typography variant="h5" gutterBottom>
+          Your cart is empty
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/")}
+          sx={{ mt: 2 }}
+        >
+          Continue Shopping
+        </Button>
+      </Container>
+    );
+  }
+
   return (
-    <div className="cart-container">
-      <h1 className="cart-title">Your Shopping Cart</h1>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Shopping Cart
+      </Typography>
 
-      <div className="cart-summary">
-        {cartItems.length === 0 ? (
-          <div className="empty-cart">
-            <p>Your cart is empty</p>
-          </div>
-        ) : (
-          <>
-            <div className="cart-header">
-              <div className="cart-header-item">Item</div>
-              <div className="cart-header-price">Price</div>
-              <div className="cart-header-quantity">Quantity</div>
-              <div className="cart-header-total">Total</div>
-              <div className="cart-header-actions">Actions</div>
-            </div>
-
+      <TableContainer component={Paper} sx={{ mb: 4 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Image</TableCell>
+              <TableCell>Item Name</TableCell>
+              <TableCell align="right">Price</TableCell>
+              <TableCell align="center">Quantity</TableCell>
+              <TableCell align="right">Total</TableCell>
+              <TableCell align="center">Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {cartItems.map((item) => (
-              <div key={item.id} className="cart-item">
-                <div className="cart-item-details">
-                  <div className="cart-item-image-placeholder"></div>
-                  <div className="cart-item-name">{item.name}</div>
-                </div>
-                <div className="cart-item-price">${item.price.toFixed(2)}</div>
-                <div className="cart-item-quantity">
-                  <div className="quantity-control">
-                    <button
-                      className="quantity-btn"
+              <TableRow key={item.id}>
+                <TableCell>
+                  <Box
+                    component="img"
+                    src={item.image}
+                    alt={item.name}
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      objectFit: "cover",
+                      backgroundColor: "grey.200",
+                    }}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Typography variant="subtitle1">{item.name}</Typography>
+                </TableCell>
+                <TableCell align="right">${item.price.toFixed(2)}</TableCell>
+                <TableCell align="center">
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 1,
+                    }}
+                  >
+                    <IconButton
                       onClick={() =>
-                        handleQuantityChange(item.id, item.quantity - 1)
+                        handleQuantityChange(item.id, item.quantity, -1)
                       }
-                      aria-label="Decrease quantity"
+                      size="small"
                     >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      min="1"
+                      <RemoveIcon />
+                    </IconButton>
+                    <TextField
+                      size="small"
                       value={item.quantity}
-                      onChange={(e) =>
-                        handleQuantityChange(item.id, e.target.value)
-                      }
-                      className="quantity-input"
+                      InputProps={{ readOnly: true }}
+                      sx={{ width: 60 }}
                     />
-                    <button
-                      className="quantity-btn"
+                    <IconButton
                       onClick={() =>
-                        handleQuantityChange(item.id, item.quantity + 1)
+                        handleQuantityChange(item.id, item.quantity, 1)
                       }
-                      aria-label="Increase quantity"
+                      size="small"
                     >
-                      +
-                    </button>
-                  </div>
-                </div>
-                <div className="cart-item-total">
-                  ${item.totalPrice.toFixed(2)}
-                </div>
-                <div className="cart-item-actions">
-                <select
-                    className="action-dropdown"
+                      <AddIcon />
+                    </IconButton>
+                  </Box>
+                </TableCell>
+                <TableCell align="right">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </TableCell>
+                <TableCell align="center">
+                  <Select
+                    size="small"
                     defaultValue=""
-                    onChange={(e) => handleActionSelect(item.id, e.target.value)}>
-                    <option value="" disabled>Select action</option>
-                    <option value="save">Save for Later</option>
-                    <option value="remove">Remove</option>
-                    <option value="none">None</option>
-                  </select>
-                </div>
-              </div>
+                    onChange={(e) => handleActionChange(e, item)}
+                    sx={{ minWidth: 120 }}
+                  >
+                    <MenuItem value="" disabled>
+                      Select Action
+                    </MenuItem>
+                    <MenuItem value="save-later">Save for Later</MenuItem>
+                    <MenuItem value="delete">Delete</MenuItem>
+                  </Select>
+                </TableCell>
+              </TableRow>
             ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-            <div className="cart-footer">
-              <div className="cart-total">
-                <span className="cart-total-label">Total:</span>
-                <span className="cart-total-amount">
-                  ${cartTotal.toFixed(2)}
-                </span>
-              </div>
-              <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+      {savedItems.length > 0 && (
+        <>
+          <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+            Saved for Later
+          </Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Image</TableCell>
+                  <TableCell>Item Name</TableCell>
+                  <TableCell align="right">Price</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {savedItems.map((savedItem) => (
+                  <TableRow key={savedItem.id}>
+                    <TableCell>
+                      <Box
+                        component="img"
+                        src={savedItem.image}
+                        alt={savedItem.name}
+                        sx={{
+                          width: 80,
+                          height: 80,
+                          objectFit: "cover",
+                          backgroundColor: "grey.200",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle1">
+                        {savedItem.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      ${savedItem.price.toFixed(2)}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => handleMoveToCart(savedItem)}
+                      >
+                        Move to Cart
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
+
+      <Box
+        sx={{
+          mt: 4,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => navigate("/")}
+        >
+          Continue Shopping
+        </Button>
+        <Box sx={{ textAlign: "right" }}>
+          <Typography variant="h5" gutterBottom>
+            Total: ${cartTotal.toFixed(2)}
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleCheckout}
+            disabled={cartItems.length === 0}
+          >
+            Proceed to Checkout
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

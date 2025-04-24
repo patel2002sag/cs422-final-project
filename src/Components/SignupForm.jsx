@@ -1,110 +1,148 @@
 import React, { useState } from "react";
-import "../Styles/styles.css";
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Tab,
+  Tabs,
+  Grid,
+  Link,
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 const SignupForm = () => {
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreement: false,
-  });
+  const [activeTab, setActiveTab] = useState(0);
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Add authentication logic here
+    navigate("/");
   };
+
+  const LoginForm = () => (
+    <form onSubmit={handleSubmit}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <TextField
+            required
+            fullWidth
+            label="Email"
+            type="email"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            fullWidth
+            label="Password"
+            type="password"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            size="large"
+          >
+            Sign In
+          </Button>
+        </Grid>
+        <Grid item xs={12} textAlign="center">
+          <Link href="#" variant="body2" onClick={() => setActiveTab(1)}>
+            Don't have an account? Sign up
+          </Link>
+        </Grid>
+      </Grid>
+    </form>
+  );
+
+  const RegisterForm = () => (
+    <form onSubmit={handleSubmit}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={6}>
+          <TextField required fullWidth label="First Name" variant="outlined" />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField required fullWidth label="Last Name" variant="outlined" />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            fullWidth
+            label="Email"
+            type="email"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            fullWidth
+            label="Password"
+            type="password"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            fullWidth
+            label="Confirm Password"
+            type="password"
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            size="large"
+          >
+            Sign Up
+          </Button>
+        </Grid>
+        <Grid item xs={12} textAlign="center">
+          <Link href="#" variant="body2" onClick={() => setActiveTab(0)}>
+            Already have an account? Sign in
+          </Link>
+        </Grid>
+      </Grid>
+    </form>
+  );
 
   return (
-    <div className="container">
-      <div className="form-container">
-        <header className="app-header">
-          <div className="app-title">Welcome</div>
-        </header>
-
-        <form className="signup-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              className="form-control"
-              placeholder="Enter username"
-              value={formData.username}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="form-control"
-              placeholder="Enter email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="form-control"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              className="form-control"
-              placeholder="Confirm password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="checkbox-group">
-            <input
-              type="checkbox"
-              id="agreement"
-              name="agreement"
-              checked={formData.agreement}
-              onChange={handleChange}
-            />
-            <label htmlFor="agreement">
-              I agree to the Privacy Policy and User Agreement
-            </label>
-          </div>
-
-          <button type="submit" className="btn">
-            Register
-          </button>
-
-          <div className="login-link">
-            Already have an account? <a href="#">Login</a>
-          </div>
-        </form>
-      </div>
-    </div>
+    <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Welcome to Furniture Store
+        </Typography>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="fullWidth"
+          >
+            <Tab label="Sign In" />
+            <Tab label="Sign Up" />
+          </Tabs>
+        </Box>
+        {activeTab === 0 ? <LoginForm /> : <RegisterForm />}
+      </Paper>
+    </Container>
   );
 };
 

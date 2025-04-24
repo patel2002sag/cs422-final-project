@@ -1,40 +1,54 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material";
+import { CartProvider } from "./context/CartContext";
+import Navigation from "./Components/Navigation";
+import BrowseItems from "./Components/BrowseItems";
 import "./Styles/App.css";
 import "./Styles/accountStyles.css";
-import { useState } from "react";
 import CartSummary from "./Components/CartSummary";
 import SignupForm from "./Components/SignupForm";
 import AccountInformation from "./Components/AccountInformation";
 import CheckoutPage from "./Components/CheckoutPage";
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#1976d2",
+    },
+    secondary: {
+      main: "#dc004e",
+    },
+  },
+});
+
 function App() {
-  const [currentView, setCurrentView] = useState("account");
-
-  const renderView = () => {
-    switch (currentView) {
-      case "signup":
-        return <SignupForm />;
-      case "cart":
-        //return <CartSummary />;
-        return <CartSummary setCurrentView={setCurrentView}/>;
-      case "account":
-        return <AccountInformation />;
-      case "checkout":
-        return <CheckoutPage />;
-      default:
-        return <AccountInformation />;
-    }
-  };
-
   return (
-    <>
-      <nav className="app-nav">
-        <button onClick={() => setCurrentView("signup")}>Signup</button>
-        <button onClick={() => setCurrentView("cart")}>Cart</button>
-        <button onClick={() => setCurrentView("account")}>Account</button>
-        <button onClick={() => setCurrentView("checkout")}>Checkout</button>
-      </nav>
-      {renderView()}
-    </>
+    <ThemeProvider theme={theme}>
+      <CartProvider>
+        <Router>
+          <div
+            style={{
+              minHeight: "100vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Navigation />
+            <main style={{ flexGrow: 1, backgroundColor: "#f5f5f5" }}>
+              <Routes>
+                <Route path="/" element={<BrowseItems />} />
+                <Route path="/cart" element={<CartSummary />} />
+                <Route path="/signup" element={<SignupForm />} />
+                <Route path="/profile" element={<AccountInformation />} />
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/login" element={<SignupForm />} />
+              </Routes>
+            </main>
+          </div>
+        </Router>
+      </CartProvider>
+    </ThemeProvider>
   );
 }
 
