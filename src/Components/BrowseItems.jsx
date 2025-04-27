@@ -207,7 +207,7 @@ const BrowseItems = () => {
   const getRecommendedProducts = () => {
     let recommendations = [...dummyProducts];
 
-    // Filter by major-specific needs
+    // Only apply filters if user is logged in and has a profile
     if (userProfile?.major) {
       switch (userProfile.major.toLowerCase()) {
         case "computer science":
@@ -230,7 +230,7 @@ const BrowseItems = () => {
       }
     }
 
-    // Filter by academic year
+    // Filter by academic year if user is logged in
     if (userProfile?.academicYear) {
       switch (userProfile.academicYear.toLowerCase()) {
         case "freshman":
@@ -276,102 +276,107 @@ const BrowseItems = () => {
   const recommendedProducts = getRecommendedProducts();
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Browse Items
-        </Typography>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Student Profile Summary - Only show if user is logged in */}
+      {userProfile && (
+        <Paper sx={{ p: 2, mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Personalized Recommendations
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Based on your profile: {userProfile.major} student,{" "}
+            {userProfile.academicYear}
+          </Typography>
+        </Paper>
+      )}
 
-        {/* Student Profile Summary */}
-        {userProfile && (
-          <Paper sx={{ p: 2, mb: 3 }}>
-            <Typography variant="h6" gutterBottom>
-              Personalized Recommendations
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Based on your profile: {userProfile.major} student,{" "}
-              {userProfile.academicYear}
-            </Typography>
-          </Paper>
-        )}
-
-        {/* Filters */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth>
-              <InputLabel>Category</InputLabel>
-              <Select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                label="Category"
-              >
-                <MenuItem value="All">All Categories</MenuItem>
-                <MenuItem value="Living Room">Living Room</MenuItem>
-                <MenuItem value="Dining Room">Dining Room</MenuItem>
-                <MenuItem value="Bedroom">Bedroom</MenuItem>
-                <MenuItem value="Office">Office</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} sm={4}>
-            <Typography gutterBottom>Price Range</Typography>
-            <Slider
-              value={priceRange}
-              onChange={(e, newValue) => setPriceRange(newValue)}
-              valueLabelDisplay="auto"
-              min={0}
-              max={2000}
-              step={100}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-              {studentFilters.map((filter) => (
-                <Chip
-                  key={filter.value}
-                  label={filter.label}
-                  onClick={() => handleFilterToggle(filter.value)}
-                  color={
-                    selectedFilters.includes(filter.value)
-                      ? "primary"
-                      : "default"
-                  }
-                />
-              ))}
-            </Box>
-          </Grid>
+      {/* Filters */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={4}>
+          <FormControl fullWidth>
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={selectedCategory}
+              label="Category"
+              onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <MenuItem value="All">All Categories</MenuItem>
+              <MenuItem value="Living Room">Living Room</MenuItem>
+              <MenuItem value="Dining Room">Dining Room</MenuItem>
+              <MenuItem value="Bedroom">Bedroom</MenuItem>
+              <MenuItem value="Office">Office</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
-
-        {/* Recommended Products */}
-        {userProfile && (
-          <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Recommended for You
-            </Typography>
-            <Grid container spacing={3}>
-              {recommendedProducts.slice(0, 4).map((product) => (
-                <Grid item key={product.id} xs={12} sm={6} md={3}>
-                  <ProductCard product={product} />
-                </Grid>
-              ))}
-            </Grid>
+        <Grid item xs={12} md={4}>
+          <Typography gutterBottom>Price Range</Typography>
+          <Slider
+            value={priceRange}
+            onChange={(e, newValue) => setPriceRange(newValue)}
+            valueLabelDisplay="auto"
+            min={0}
+            max={2000}
+            step={100}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <Typography gutterBottom>Filters</Typography>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            {studentFilters.map((filter) => (
+              <Chip
+                key={filter.value}
+                label={filter.label}
+                onClick={() => handleFilterToggle(filter.value)}
+                color={
+                  selectedFilters.includes(filter.value) ? "primary" : "default"
+                }
+              />
+            ))}
           </Box>
-        )}
+        </Grid>
+      </Grid>
 
-        {/* All Products */}
-        <Typography variant="h6" gutterBottom>
+      {/* All Products */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: 700,
+            mb: 2,
+          }}
+        >
           All Products
         </Typography>
         <Grid container spacing={3}>
           {filteredProducts.map((product) => (
-            <Grid item key={product.id} xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
               <ProductCard product={product} />
             </Grid>
           ))}
         </Grid>
       </Box>
+
+      {/* Recommended Products - Only show if user is logged in */}
+      {userProfile && (
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 700,
+              mb: 2,
+            }}
+          >
+            Recommended for You
+          </Typography>
+          <Grid container spacing={3}>
+            {recommendedProducts.map((product) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+                <ProductCard product={product} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      )}
 
       <AIChatbot />
     </Container>
