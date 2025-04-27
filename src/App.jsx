@@ -19,6 +19,7 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import { UserProvider } from "./context/UserContext";
 import { CartProvider } from "./context/CartContext";
 import { OrderProvider } from "./context/OrderContext";
+import { SavedItemsProvider } from "./context/SavedItemsContext";
 
 const theme = createTheme({
   palette: {
@@ -33,64 +34,66 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <Router>
       <UserProvider>
         <CartProvider>
-          <OrderProvider>
-            <Router>
-              <Navigation />
-              <Routes>
-                <Route path="/login" element={<SignupForm />} />
-                <Route path="/signup" element={<SignupForm />} />
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <BrowseItems />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/cart"
-                  element={
-                    <ProtectedRoute>
-                      <CartSummary />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/checkout"
-                  element={
-                    <ProtectedRoute>
-                      <CheckoutPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/account"
-                  element={
-                    <ProtectedRoute>
-                      <AccountInformation />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/orders"
-                  element={
-                    <ProtectedRoute>
-                      <OrderHistory />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="/orders/:orderId" element={<OrderTracking />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Router>
-          </OrderProvider>
+          <SavedItemsProvider>
+            <OrderProvider>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Navigation />
+                <Routes>
+                  <Route path="/login" element={<SignupForm />} />
+                  <Route path="/signup" element={<SignupForm />} />
+                  <Route
+                    path="/"
+                    element={
+                      <ProtectedRoute>
+                        <BrowseItems />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/cart"
+                    element={
+                      <ProtectedRoute>
+                        <CartSummary />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/checkout"
+                    element={
+                      <ProtectedRoute>
+                        <CheckoutPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/account"
+                    element={
+                      <ProtectedRoute>
+                        <AccountInformation />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/orders"
+                    element={
+                      <ProtectedRoute>
+                        <OrderHistory />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/orders/:orderId" element={<OrderTracking />} />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </ThemeProvider>
+            </OrderProvider>
+          </SavedItemsProvider>
         </CartProvider>
       </UserProvider>
-    </ThemeProvider>
+    </Router>
   );
 }
 

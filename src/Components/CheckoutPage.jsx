@@ -425,7 +425,7 @@ const CheckoutPage = () => {
     cvv: "",
     cardholderName: "",
   });
-  const [formErrors, setFormErrors] = useState({});
+  const [setFormErrors] = useState({});
 
   const handleNext = () => {
     let errors = {};

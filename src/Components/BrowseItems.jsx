@@ -11,10 +11,24 @@ import {
   Slider,
   Chip,
   Paper,
+  Card,
+  CardContent,
+  CardMedia,
+  Button,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import ProductCard from "./ProductCard";
 import AIChatbot from "./AIChatbot";
 import { useUser } from "../context/UserContext";
+import { useCart } from "../context/CartContext";
+import { useSavedItems } from "../context/SavedItemsContext";
+import {
+  BookmarkBorder as BookmarkBorderIcon,
+  Bookmark as BookmarkIcon,
+} from "@mui/icons-material";
 
 const dummyProducts = [
   // Living Room
@@ -189,6 +203,9 @@ const dummyProducts = [
 
 const BrowseItems = () => {
   const { userProfile } = useUser();
+  const { addToCart } = useCart();
+  const { addToSavedItems, removeFromSavedItems, isItemSaved } =
+    useSavedItems();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceRange, setPriceRange] = useState([0, 2000]);
   const [selectedFilters, setSelectedFilters] = useState([]);
@@ -260,6 +277,14 @@ const BrowseItems = () => {
         ? prev.filter((f) => f !== filter)
         : [...prev, filter]
     );
+  };
+
+  const handleSaveForLater = (item) => {
+    if (isItemSaved(item.id)) {
+      removeFromSavedItems(item.id);
+    } else {
+      addToSavedItems(item);
+    }
   };
 
   const filteredProducts = dummyProducts.filter((product) => {
@@ -350,7 +375,72 @@ const BrowseItems = () => {
         <Grid container spacing={3}>
           {filteredProducts.map((product) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-              <ProductCard product={product} />
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                }}
+              >
+                <Box sx={{ position: "relative" }}>
+                  <CardMedia
+                    component="img"
+                    height="200"
+                    image={product.image}
+                    alt={product.name}
+                    sx={{ objectFit: "cover" }}
+                  />
+                  <IconButton
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      backgroundColor: "rgba(255, 255, 255, 0.8)",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.9)",
+                      },
+                    }}
+                    onClick={() => handleSaveForLater(product)}
+                  >
+                    <Tooltip
+                      title={
+                        isItemSaved(product.id)
+                          ? "Remove from Saved"
+                          : "Save for Later"
+                      }
+                    >
+                      {isItemSaved(product.id) ? (
+                        <BookmarkIcon color="primary" />
+                      ) : (
+                        <BookmarkBorderIcon />
+                      )}
+                    </Tooltip>
+                  </IconButton>
+                </Box>
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography gutterBottom variant="h6" component="h2">
+                    {product.name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {product.category}
+                  </Typography>
+                  <Typography variant="h6" color="primary" gutterBottom>
+                    ${product.price.toFixed(2)}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={() => addToCart(product)}
+                  >
+                    Add to Cart
+                  </Button>
+                </CardContent>
+              </Card>
             </Grid>
           ))}
         </Grid>
@@ -371,7 +461,72 @@ const BrowseItems = () => {
           <Grid container spacing={3}>
             {recommendedProducts.map((product) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-                <ProductCard product={product} />
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    position: "relative",
+                  }}
+                >
+                  <Box sx={{ position: "relative" }}>
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={product.image}
+                      alt={product.name}
+                      sx={{ objectFit: "cover" }}
+                    />
+                    <IconButton
+                      sx={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        backgroundColor: "rgba(255, 255, 255, 0.8)",
+                        "&:hover": {
+                          backgroundColor: "rgba(255, 255, 255, 0.9)",
+                        },
+                      }}
+                      onClick={() => handleSaveForLater(product)}
+                    >
+                      <Tooltip
+                        title={
+                          isItemSaved(product.id)
+                            ? "Remove from Saved"
+                            : "Save for Later"
+                        }
+                      >
+                        {isItemSaved(product.id) ? (
+                          <BookmarkIcon color="primary" />
+                        ) : (
+                          <BookmarkBorderIcon />
+                        )}
+                      </Tooltip>
+                    </IconButton>
+                  </Box>
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography gutterBottom variant="h6" component="h2">
+                      {product.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                    >
+                      {product.category}
+                    </Typography>
+                    <Typography variant="h6" color="primary" gutterBottom>
+                      ${product.price.toFixed(2)}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      onClick={() => addToCart(product)}
+                    >
+                      Add to Cart
+                    </Button>
+                  </CardContent>
+                </Card>
               </Grid>
             ))}
           </Grid>

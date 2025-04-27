@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Container,
   Typography,
@@ -15,16 +15,34 @@ import {
   MenuItem,
   IconButton,
   TextField,
+  Card,
+  CardContent,
+  CardMedia,
+  Divider,
+  FormControl,
+  InputLabel,
+  TablePagination,
+  Chip,
+  Stack,
+  Tooltip,
 } from "@mui/material";
-import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import {
+  Add as AddIcon,
+  Remove as RemoveIcon,
+  Delete as DeleteIcon,
+  Bookmark as BookmarkIcon,
+  BookmarkBorder as BookmarkBorderIcon,
+} from "@mui/icons-material";
 import { useCart } from "../context/CartContext";
+import { useSavedItems } from "../context/SavedItemsContext";
 import { useNavigate } from "react-router-dom";
 
 const CartSummary = () => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, addToCart } =
     useCart();
+  const { savedItems, addToSavedItems, removeFromSavedItems, moveToCart } =
+    useSavedItems();
   const navigate = useNavigate();
-  const [savedItems, setSavedItems] = useState([]);
 
   const handleQuantityChange = (productId, currentQuantity, increment) => {
     const newQuantity = currentQuantity + increment;
@@ -33,26 +51,27 @@ const CartSummary = () => {
     }
   };
 
-  const handleActionChange = (event, item) => {
-    const action = event.target.value;
-    switch (action) {
-      case "save-later":
-        setSavedItems([...savedItems, item]);
-        removeFromCart(item.id);
-        break;
-      case "delete":
-        removeFromCart(item.id);
-        break;
-      default:
-        break;
+  const handleSaveForLater = (itemId) => {
+    const item = cartItems.find((item) => item.id === itemId);
+    if (item) {
+      addToSavedItems(item);
+      removeFromCart(item.id);
     }
   };
 
-  const handleMoveToCart = (savedItem) => {
-    // Remove from saved items
-    setSavedItems(savedItems.filter((item) => item.id !== savedItem.id));
-    // Add back to cart with quantity 1
-    addToCart({ ...savedItem, quantity: 1 });
+  const handleMoveToCart = (itemId) => {
+    const item = savedItems.find((item) => item.id === itemId);
+    if (item) {
+      addToCart(moveToCart(item));
+    }
+  };
+
+  const handleDelete = (itemId) => {
+    removeFromCart(itemId);
+  };
+
+  const handleDeleteSaved = (itemId) => {
+    removeFromSavedItems(itemId);
   };
 
   const handleCheckout = () => {
@@ -87,62 +106,57 @@ const CartSummary = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Image</TableCell>
-              <TableCell>Item Name</TableCell>
+              <TableCell>Product</TableCell>
               <TableCell align="right">Price</TableCell>
-              <TableCell align="center">Quantity</TableCell>
+              <TableCell align="right">Quantity</TableCell>
               <TableCell align="right">Total</TableCell>
-              <TableCell align="center">Actions</TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {cartItems.map((item) => (
               <TableRow key={item.id}>
-                <TableCell>
-                  <Box
-                    component="img"
-                    src={item.image}
-                    alt={item.name}
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      objectFit: "cover",
-                      backgroundColor: "grey.200",
-                    }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="subtitle1">{item.name}</Typography>
+                <TableCell component="th" scope="row">
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 80, height: 80, objectFit: "cover" }}
+                      image={item.image}
+                      alt={item.name}
+                    />
+                    <Box>
+                      <Typography variant="subtitle1">{item.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.category}
+                      </Typography>
+                    </Box>
+                  </Box>
                 </TableCell>
                 <TableCell align="right">${item.price.toFixed(2)}</TableCell>
-                <TableCell align="center">
+                <TableCell align="right">
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
+                      justifyContent: "flex-end",
                       gap: 1,
                     }}
                   >
                     <IconButton
-                      onClick={() =>
-                        handleQuantityChange(item.id, item.quantity, -1)
-                      }
                       size="small"
+                      onClick={() =>
+                        handleQuantityChange(item.id, item.quantity - 1)
+                      }
+                      disabled={item.quantity <= 1}
                     >
                       <RemoveIcon />
                     </IconButton>
-                    <TextField
-                      size="small"
-                      value={item.quantity}
-                      InputProps={{ readOnly: true }}
-                      sx={{ width: 60 }}
-                    />
+                    <Typography>{item.quantity}</Typography>
                     <IconButton
-                      onClick={() =>
-                        handleQuantityChange(item.id, item.quantity, 1)
-                      }
                       size="small"
+                      onClick={() =>
+                        handleQuantityChange(item.id, item.quantity + 1)
+                      }
                     >
                       <AddIcon />
                     </IconButton>
@@ -151,19 +165,27 @@ const CartSummary = () => {
                 <TableCell align="right">
                   ${(item.price * item.quantity).toFixed(2)}
                 </TableCell>
-                <TableCell align="center">
-                  <Select
-                    size="small"
-                    defaultValue=""
-                    onChange={(e) => handleActionChange(e, item)}
-                    sx={{ minWidth: 120 }}
+                <TableCell align="right">
+                  <Box
+                    sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
                   >
-                    <MenuItem value="" disabled>
-                      Select Action
-                    </MenuItem>
-                    <MenuItem value="save-later">Save for Later</MenuItem>
-                    <MenuItem value="delete">Delete</MenuItem>
-                  </Select>
+                    <Tooltip title="Save for Later">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleSaveForLater(item.id)}
+                      >
+                        <BookmarkBorderIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
@@ -180,44 +202,62 @@ const CartSummary = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Image</TableCell>
-                  <TableCell>Item Name</TableCell>
+                  <TableCell>Product</TableCell>
                   <TableCell align="right">Price</TableCell>
-                  <TableCell align="center">Actions</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {savedItems.map((savedItem) => (
-                  <TableRow key={savedItem.id}>
-                    <TableCell>
+                {savedItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell component="th" scope="row">
                       <Box
-                        component="img"
-                        src={savedItem.image}
-                        alt={savedItem.name}
-                        sx={{
-                          width: 80,
-                          height: 80,
-                          objectFit: "cover",
-                          backgroundColor: "grey.200",
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="subtitle1">
-                        {savedItem.name}
-                      </Typography>
+                        sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                      >
+                        <CardMedia
+                          component="img"
+                          sx={{ width: 80, height: 80, objectFit: "cover" }}
+                          image={item.image}
+                          alt={item.name}
+                        />
+                        <Box>
+                          <Typography variant="subtitle1">
+                            {item.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {item.category}
+                          </Typography>
+                        </Box>
+                      </Box>
                     </TableCell>
                     <TableCell align="right">
-                      ${savedItem.price.toFixed(2)}
+                      ${item.price.toFixed(2)}
                     </TableCell>
-                    <TableCell align="center">
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        onClick={() => handleMoveToCart(savedItem)}
+                    <TableCell align="right">
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          gap: 1,
+                        }}
                       >
-                        Move to Cart
-                      </Button>
+                        <Tooltip title="Move to Cart">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleMoveToCart(item.id)}
+                          >
+                            <BookmarkIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteSaved(item.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
