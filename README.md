@@ -57,3 +57,8 @@ This project focuses purely on the frontend. There is **no backend server**. All
 
 If you encounter any issues or have questions, please contact the project group members.
 Thank you for using Rastro!
+
+
+AI usage:
+
+No AI was used
